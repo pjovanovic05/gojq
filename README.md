@@ -14,7 +14,7 @@ values at properties at any depth in the JSON.
 ## Installation
 
 ```
-    go get -u github.com/pjovanovic05/gojq
+go get -u github.com/pjovanovic05/gojq
 ```
 
 TODO example usage...
