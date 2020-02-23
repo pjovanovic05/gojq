@@ -11,4 +11,10 @@ data, but it could not modify the underlying JSON object.
 So, the key feature of gojq is that it supports setting
 values at properties at any depth in the JSON.
 
+## Installation
+
+```
+    go get -u github.com/pjovanovic05/gojq
+```
+
 TODO example usage...
