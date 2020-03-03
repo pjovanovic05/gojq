@@ -12,7 +12,7 @@ values at properties at any depth in the JSON.
 
 ## Installation
 
-```
+```bash
 go get -u github.com/pjovanovic05/gojq
 ```
 
@@ -23,13 +23,32 @@ src := `{
     "foo": {
         "bar": {
             "baz": [
-                
-            ]
+                "seven",
+				"of",
+				"nine"
+            ],
+		"counter": 0
         }
     }
 }`
 
 jq := gojq.FromBytes([]byte(src))
-jq.Select()
 
+// Get the value from a deeply nested property
+var currentCount int
+jq.Select("foo", "bar", "counter).As(&currentCount)
+if jq.Err != nil {
+	log.Fatal(jq.Err)
+}
+fmt.Println("The current count is:", currentCount)
+
+// Set a value
+currentCount++
+jq.Select("foo", "bar", "counter").Set(currentCount)
+
+// iterate array:
+it := jq.Select("foo", "bar", "baz").Iterator()
+for it.Next() {
+	fmt.Println(it.Value())
+}
 ```
