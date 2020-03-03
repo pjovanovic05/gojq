@@ -36,7 +36,7 @@ jq := gojq.FromBytes([]byte(src))
 
 // Get the value from a deeply nested property
 var currentCount int
-jq.Select("foo", "bar", "counter).As(&currentCount)
+jq.Select("foo", "bar", "counter").As(&currentCount)
 if jq.Err != nil {
 	log.Fatal(jq.Err)
 }
