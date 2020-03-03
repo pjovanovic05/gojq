@@ -24,10 +24,10 @@ src := `{
         "bar": {
             "baz": [
                 "seven",
-				"of",
-				"nine"
+                "of",
+                "nine"
             ],
-		"counter": 0
+            "counter": 0
         }
     }
 }`
