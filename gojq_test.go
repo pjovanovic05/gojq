@@ -153,6 +153,52 @@ func TestSet(t *testing.T) {
 	}
 }
 
+func TestDelete(t *testing.T) {
+	testStr := `{
+		"_source": {
+			"docid": 123,
+			"content": "hello",
+			"arr": [
+				{"obj": 1, "name": "abbot"},
+				{"obj": 2, "name": "costello"},
+				{"obj": 3.0, "name": "stanlio"}
+			]
+		},
+		"hits": 1
+	}`
+	jn := FromBytes([]byte(testStr))
+
+	tmp := jn.Select("_source", "docid").Delete()
+	if tmp.Err != nil {
+		t.Error(tmp.Err)
+	}
+	exists := jn.Select("_source", "docid").Exists()
+	if exists {
+		t.Error("expected docid not exist")
+	}
+	// test appending to array
+	tmp = jn.Select("_source", "arr", "1").Delete()
+	if tmp.Err != nil {
+		t.Error(tmp.Err)
+	}
+	var arr []interface{}
+	err := jn.Select("_source", "arr").As(&arr)
+	if err != nil {
+		t.Error(err)
+	}
+	if len(arr) != 2 {
+		t.Errorf("Wrong number of elements: %d", len(arr))
+	}
+	var name string
+	err = jn.Select("_source", "arr", "1", "name").As(&name)
+	if err != nil {
+		t.Error(err)
+	}
+	if name != "stanlio" {
+		t.Errorf("Expected name 'stanlio', got '%s'", name)
+	}
+}
+
 func TestExists(t *testing.T) {
 	testStr := `{
 		"_source": {

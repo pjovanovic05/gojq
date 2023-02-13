@@ -147,6 +147,31 @@ func (jn *JNode) Set(val interface{}) *JNode {
 	return jn
 }
 
+// Delete remove the current JNode in the json tree
+func (jn *JNode) Delete() *JNode {
+	jn.value = nil
+	if jn.parent != nil {
+		// update parent
+		switch jn.parent.value.(type) {
+		case []interface{}:
+			idx, err := strconv.Atoi(jn.key)
+			if err != nil {
+				jn.Err = err
+				return jn
+			}
+			arr := jn.parent.value.([]interface{})
+			parent := jn.parent
+			parent.value = append(arr[:idx], arr[idx+1:]...)
+			if parent.parent != nil {
+				parent.parent.Select(parent.key).Set(parent.value)
+			}
+		case map[string]interface{}:
+			delete(jn.parent.value.(map[string]interface{}), jn.key)
+		}
+	}
+	return jn
+}
+
 // Exists checks to see if a property is present
 func (jn *JNode) Exists(path ...string) bool {
 	q, err := recursiveWalk(jn, path)
