@@ -174,6 +174,11 @@ func TestExists(t *testing.T) {
 	if exists {
 		t.Error("should not exist")
 	}
+	jn = jn.Select("loch", "ness", "monster")
+	exists = jn.Exists()
+	if exists {
+		t.Error("should not exist")
+	}
 }
 
 func TestIterator(t *testing.T) {

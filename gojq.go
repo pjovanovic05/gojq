@@ -65,7 +65,7 @@ func (jn *JNode) Select(path ...string) *JNode {
 
 func recursiveWalk(jn *JNode, path []string) (*JNode, error) {
 	if len(path) == 0 {
-		return jn, nil
+		return jn, jn.Err
 	}
 	key := path[0]
 	if len(path) == 1 {
@@ -166,7 +166,7 @@ func (jn *JNode) Iterator() *JNIterator {
 	return &JNIterator{i: -1, data: jn.value.([]interface{})}
 }
 
-//JNIterator is iterator for array fields in a JNode
+// JNIterator is iterator for array fields in a JNode
 type JNIterator struct {
 	i      int
 	data   []interface{}
