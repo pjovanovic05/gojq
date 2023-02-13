@@ -140,10 +140,9 @@ func (jn *JNode) Set(val interface{}) *JNode {
 		case map[string]interface{}:
 			jn.parent.value.(map[string]interface{})[jn.key] = val
 		}
-	} else {
-		// root, update just its value
-		jn.value = val
 	}
+	// update its own value
+	jn.value = val
 	return jn
 }
 
@@ -183,6 +182,11 @@ func (jn *JNode) Exists(path ...string) bool {
 		return true
 	}
 	return false
+}
+
+// Value return the value of the current JNode
+func (jn *JNode) Value() interface{} {
+	return jn.value
 }
 
 // Iterator returns an iterator object for an array property
