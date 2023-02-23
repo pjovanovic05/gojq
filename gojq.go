@@ -65,7 +65,7 @@ func (jn *JNode) Select(path ...string) *JNode {
 
 func recursiveWalk(jn *JNode, path []string) (*JNode, error) {
 	if len(path) == 0 {
-		return jn, nil
+		return jn, jn.Err
 	}
 	key := path[0]
 	if len(path) == 1 {
@@ -140,9 +140,33 @@ func (jn *JNode) Set(val interface{}) *JNode {
 		case map[string]interface{}:
 			jn.parent.value.(map[string]interface{})[jn.key] = val
 		}
-	} else {
-		// root, update just its value
-		jn.value = val
+	}
+	// update its own value
+	jn.value = val
+	return jn
+}
+
+// Delete remove the current JNode in the json tree
+func (jn *JNode) Delete() *JNode {
+	jn.value = nil
+	if jn.parent != nil {
+		// update parent
+		switch jn.parent.value.(type) {
+		case []interface{}:
+			idx, err := strconv.Atoi(jn.key)
+			if err != nil {
+				jn.Err = err
+				return jn
+			}
+			arr := jn.parent.value.([]interface{})
+			parent := jn.parent
+			parent.value = append(arr[:idx], arr[idx+1:]...)
+			if parent.parent != nil {
+				parent.parent.Select(parent.key).Set(parent.value)
+			}
+		case map[string]interface{}:
+			delete(jn.parent.value.(map[string]interface{}), jn.key)
+		}
 	}
 	return jn
 }
@@ -160,13 +184,18 @@ func (jn *JNode) Exists(path ...string) bool {
 	return false
 }
 
+// Value return the value of the current JNode
+func (jn *JNode) Value() interface{} {
+	return jn.value
+}
+
 // Iterator returns an iterator object for an array property
 func (jn *JNode) Iterator() *JNIterator {
 	// TODO make sure it is an array
 	return &JNIterator{i: -1, data: jn.value.([]interface{})}
 }
 
-//JNIterator is iterator for array fields in a JNode
+// JNIterator is iterator for array fields in a JNode
 type JNIterator struct {
 	i      int
 	data   []interface{}
